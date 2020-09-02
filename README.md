@@ -1,3 +1,92 @@
+
+**Parsons School of Design, The New School  
+School of Art, Media and Technology  
+Master of Science, Data Visualization**
+
+# Data Structures
+
+### PGDV 5110 Syllabus, Fall 2020
+
+Wednesdays, 12:10pm - 2:50pm  
+online course | Zoom info in Canvas
+
+**Faculty:** [Aaron Hill](https://aaronhill.io/) | Office Hours: Fridays 3:00pm - 4:00pm: no appointment needed; Zoom info in Canvas
+
+**[Slack](https://ms-dataviz.slack.com/archives/C019Q8M3CHX):** I encourage use of the `#data-structures-20` channel in the `ms-dataviz` Slack for collaboration and work on assignments, including the 12 weekly and 3 final assignments. All questions/issues about the assignments should be posted here, building a shared knowledge base in the process. Questions/issues raised in office hours should also be posed here prior to the office hour meeting and the answer/resolution will be posted by the person who originally posed the question. 
+
+**Course description:** Curating raw data presents issues of technology, speed, and efficiency, as well as broader ethical considerations of what it means to represent and make conclusions about groups and individuals from their data. This course covers the database, semi-structured data, and unstructured data. Students will gain familiarity with underlying data structures; techniques and tools, including acquisition, augmentation, and restructuring; data storage and aggregation; access to parallel and distributed computing; high-volume data, disparate sources, and performance; and streaming data, real time, and dynamic queries.
+
+**Prerequisites:** Basic knowledge of JavaScript, HTML/CSS, Linux command line, Git, and [GitHub](https://lab.github.com/githubtraining/introduction-to-github).
+
+## Course Overview
+
+Duration | Description
+--- | -------
+Week 1 | Introductions and overview of semester
+Weeks 2 - 4 | Fundamental data structures; modeling structured data
+Week 5 | Modeling semi-structured data
+Week 6 | The Query
+Weeks 7 - 9 | Physical sensors and IoT; data cleaning
+Week 10-11 | Interface design; serverless computing 
+Weeks 12 - 14 | Reliability, scalability, maintainability, sustainability; Labs
+Week 15 | Final presentations (video) and reflections (Canvas)
+
+## Course Outline
+
+### September 2 (Week 1)
+
+Introduction to data structures.
+
+**[Weekly Assignment 1](https://github.com/visualizedata/data-structures/blob/master/weekly_assignment_01.md), due Tuesday 9/8 at 6:00pm:**  
+You will "get" some HTML files, save them, and study their structure.  
+
+#### Documentation: 
+
+*
+**Parsons School of Design, The New School  
+School of Art, Media and Technology  
+Master of Science, Data Visualization**
+
+# Data Structures
+
+### PGDV 5110 Syllabus, Fall 2020
+
+Wednesdays, 12:10pm - 2:50pm  
+online course | Zoom info in Canvas
+
+**Faculty:** [Aaron Hill](https://aaronhill.io/) | Office Hours: Fridays 3:00pm - 4:00pm: no appointment needed; Zoom info in Canvas
+
+**[Slack](https://ms-dataviz.slack.com/archives/C019Q8M3CHX):** I encourage use of the `#data-structures-20` channel in the `ms-dataviz` Slack for collaboration and work on assignments, including the 12 weekly and 3 final assignments. All questions/issues about the assignments should be posted here, building a shared knowledge base in the process. Questions/issues raised in office hours should also be posed here prior to the office hour meeting and the answer/resolution will be posted by the person who originally posed the question. 
+
+**Course description:** Curating raw data presents issues of technology, speed, and efficiency, as well as broader ethical considerations of what it means to represent and make conclusions about groups and individuals from their data. This course covers the database, semi-structured data, and unstructured data. Students will gain familiarity with underlying data structures; techniques and tools, including acquisition, augmentation, and restructuring; data storage and aggregation; access to parallel and distributed computing; high-volume data, disparate sources, and performance; and streaming data, real time, and dynamic queries.
+
+**Prerequisites:** Basic knowledge of JavaScript, HTML/CSS, Linux command line, Git, and [GitHub](https://lab.github.com/githubtraining/introduction-to-github).
+
+## Course Overview
+
+Duration | Description
+--- | -------
+Week 1 | Introductions and overview of semester
+Weeks 2 - 4 | Fundamental data structures; modeling structured data
+Week 5 | Modeling semi-structured data
+Week 6 | The Query
+Weeks 7 - 9 | Physical sensors and IoT; data cleaning
+Week 10-11 | Interface design; serverless computing 
+Weeks 12 - 14 | Reliability, scalability, maintainability, sustainability; Labs
+Week 15 | Final presentations (video) and reflections (Canvas)
+
+## Course Outline
+
+### September 2 (Week 1)
+
+Introduction to data structures.
+
+**[Weekly Assignment 1](https://github.com/visualizedata/data-structures/blob/master/weekly_assignment_01.md), due Tuesday 9/8 at 6:00pm:**  
+You will "get" some HTML files, save them, and study their structure.  
+
+#### Documentation: 
+
+*AD
 **Parsons School of Design, The New School  
 School of Art, Media and Technology  
 Master of Science, Data Visualization**
@@ -403,4 +492,8 @@ The New School views "academic honesty and integrity" as the duty of every membe
 ### Intellectual Property Rights
 
 The New School (the "university") seeks to encourage creativity and invention among its faculty members and students. In doing so, the University affirms its traditional commitment to the personal ownership by its faculty members and students of Intellectual Property Rights in works they create. The complete policy governing Intellectual Property Rights may be seen on the [university website, on the Provost's page](https://www.newschool.edu/provost/accreditation-policies/).
+
+=======
+# data-structures
+Data Structures | Fall 2020 | MS Data Visualization at Parsons School of Design
 
