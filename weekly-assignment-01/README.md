@@ -7,8 +7,6 @@ All of your work for this class should be kept in this (well-organized!) reposit
 
 You'll need an AWS account to use for your work this semester. [Be careful to avoid unexpected charges](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/checklistforunwantedcharges.html). You will create a Cloud 9 environment in this AWS account for your work in this course. Do not use the Major Studio AWS account that Daniel sent you. You will incur some expenses on AWS but they are very unlikely to exceed what you get on the free tier plus the $100 credit you receive from signing up for [AWS Educate](https://aws.amazon.com/education/awseducate/). 
 
-# Weekly Assignment 1
-
 ## Part One
 
 1. Using Node.js (in Cloud 9), make a request for each of the ten "Meeting List Agenda" pages for Manhattan. **Important: show the code for all ten requests.**    
