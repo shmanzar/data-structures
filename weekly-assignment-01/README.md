@@ -49,7 +49,7 @@ We need to query 10 files from a server and then store their content (HTML) in s
 First, I ran the starter code and observed that the result was a text file with the URL’s content inside it. So I needed to run that code block iteratively over the given URL list.
 
 #### Generate list of URLs in an array
-I noticed that the given URLs share a pattern - they are similar except incrementally changing the digit just before `.txt` extension. Therefore, it would make sense to iteratively generate URLs as strings and store them in an array.
+I noticed that the given URLs share a pattern - they are similar except incrementally changing the digit just before `.html` extension. Therefore, it would make sense to iteratively generate URLs as strings and store them in an array.
 
 ```javascript
 
@@ -83,11 +83,108 @@ var filtered_array = link_array.filter(function(value) { return value != 'https:
 ```
 
 
-#### Request all 10 pages and store their content in text files
+#### Request one page and sore it's contents
 
-First, I wanted to solve this problem for at least one page so that later I can simply apply the solution to all ten pages.
+First, I wanted to solve this problem for at least one page so that later I can simply apply the solution to all ten pages. I made a `data` folder so that I can store the downloaded file.
+
+I decided to run the code with the input URL change to one from the array. I added a `console.log()`  marking a successful download:
+
+```javascript 
+
+    request('https://parsons.nyc/aa/m01.html', function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            fs.writeFileSync('data/test.txt', body);
+            console.log("File downloaded!");
+        }
+        else { console.log("Request failed!") }
+    });
+
+```
 
 
+This worked as expected and downloaded a single file called `test.txt` in the `data` folder.
+
+Next, I wanted to run this code ten times on each item in the `filtered_array`. So I decided to convert the download code into a function called `getData()` which takes in a string signifying a URL link and then downloads them.
+
+```javascript
+function getData(link) {
+    request(link, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            fs.writeFileSync('data/test.txt', body);
+            console.log("File downloaded!");
+        }
+        else { console.log("Request failed!") }
+    });
+}
+```
+
+I tested the function with `getData('https://parsons.nyc/aa/m01.html')` and it worked.
+
+#### Store each URL content in a separate appropriately named file
+
+I realised I needed to alter the `writeFileSync` function such that for each link in `filtered_array` , it saves each downloaded file separately in `data`. 
+I also wanted to have sensible naming convention for the downloaded files; something which matches the URLs. So I decided that each downloaded file should be named after the respective HTML page it was extracted from. For example:
+
+`'https://parsons.nyc/aa/m01.html'` should result in a text file called `m01.txt` in the `data` folder.
+I thought this was good use case for regular expressions which I had previously used in other languages. So after looking in the documentation, I saw that the `match()` function fulfilled this requirement. 
+
+`match()` is a method which can applied to strings - it takes in a regular expression and results in the matching values for the string.  Since I needed only to match the name of the HTML file in the URL and they all followed a patter where the name started with a `m` and was followed by two digits, I used the regular expression `m\d{2}`  and stored the resulting value into variable called `filename`.
+
+```javascript
+
+let filename = link.match(/m\d{2}/g);
+
+```
+
+
+Then in the writeFileSync function, I concatenated the matched `filename` to produce individual paths to text files in the `data` folder.
+
+```javascript
+
+fs.writeFileSync('data/' + filename + '.txt', body);
+
+```
+
+The `getData()` function finally looked like this:
+
+```javascript
+function getData(link) {
+    request(link, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            let filename = link.match(/m\d{2}/g);
+            fs.writeFileSync('data/' + filename + '.txt', body);
+            console.log("File downloaded!");
+        }
+        else { console.log("Request failed!") }
+    });
+}
+
+```
+
+
+#### Request each page iteratively
+
+I needed now to call this function on each of the ten URLs stored in the `filtered_array` .
+I used the `forEach()` array method for and called it as an arrow function for the array.
+
+```javascript
+filtered_array.forEach(link => getData(link));
+
+```
+
+I get ten `File downloaded!` confirmations on the console and the data folder is populated with ten text files
+
+```
+m01.txt
+m02.txt
+…
+…
+…
+…
+m10.txt
+```
+ 
+Each text files contains the html content from the URLs. They are big files since they have the style data as part of the html file rather than being a separate CSS file. Right around in the middle of the file, is the HTML code with the meeting locations data. It looks like it has been stored in multiple tables.
 
 
 
