@@ -83,9 +83,9 @@ var filtered_array = link_array.filter(function(value) { return value != 'https:
 ```
 
 
-#### Request one page and sore it's contents
+#### Request one page and store it's contents
 
-First, I wanted to solve this problem for at least one page so that later I can simply apply the solution to all ten pages. I made a `data` folder so that I can store the downloaded file.
+First, I wanted to solve this problem for at least one page so that later I can simply apply the solution to all ten pages. I made a `data` folder so that I can store the downloaded file. I installed the `npm` module `request`
 
 I decided to run the code with the input URL change to one from the array. I added a `console.log()`  marking a successful download:
 
