@@ -5,22 +5,31 @@ var cheerio = require('cheerio');
 
 // load the thesis text file into a variable, `content`
 // this is the file that we created in the starter code from last week
-var content = fs.readFileSync('data/m04.txt');
+let filename = 'data/m04'
+var content = fs.readFileSync(filename + '.txt');
 
 // load `content` into a cheerio object
 var $ = cheerio.load(content);
 
-// print (to the console) names of thesis students
-$('h4').each(function(I, elem) {
-    console.log($(elem).text());
+var aa = {
+    zone: 'Zone 4',
+    meetings: []
+};
+
+let counter = 1;
+$('td').each(function(I, elem) {
+    if ($(elem).attr('style') === 'border-bottom:1px solid #e3e3e3; width:260px') {
+        $(elem).html().split('<br>')
+        aa.meetings.push({
+            meeting_number: counter,
+            street_address: $(elem).html().split('<br>')[2].trim().match(/^\d{1,5}.+?(?=,|-)/gm),
+            meeting_name: $(elem).html().split('<br>')[1].trim().match(/\b(\d{1,3}\s|\d{1,3}nd\s|\d{1,3}rd\s|\d{1,3}st\s|\d{1,3}st\s|[A-Z\s])+\b.+?(?=-)/gm)[0]
+        })
+        counter++;
+    }
 });
 
-// write the project titles to a text file
-// var thesisTitles = ''; // this variable will hold the lines of text
+console.log(aa.meetings)
 
-// $('.project.title').each(function(I, elem) {
-//     thesisTitles += ($(elem).text()).trim() + '\n';
 
-// });
-
-// fs.writeFileSync('data/thesisTitles.txt', thesisTitles);
+fs.writeFileSync(filename + '_JSON' + '.txt', JSON.stringify(aa));
