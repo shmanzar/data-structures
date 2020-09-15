@@ -77,7 +77,7 @@ var $ = cheerio.load(content);
 This allows us to now traverse through the file’s DOM using cheerio’s selectors.
 
 #### Choosing a data structure for the street addresses - Part I
-The instructions asked use to consider the data structure we will use to extract the street addresses into. I pick an array because I imagined that we will push each address parsed from the file into a collection (or rather an array) of street addresses.  Therefore, I created an `address` array:
+The instructions asked us to consider the data structure we will use to extract the street addresses into. I pick an array because I imagined that we will push each address parsed from the file into a collection (or rather an array) of street addresses.  Therefore, I created an `address` array:
 ```javascript
 var address = [];
 
@@ -124,11 +124,11 @@ I logged the selected elements to the console and use cheerio’s `.html()` pars
                                                 <span style="color:darkblue; font-size:10pt;">
                         <img src="../images/wheelchair.jpg" alt="Wheelchair Access" width="20" vspace="5" hspace="10" align="absmiddle">Wheelchair access
                         </span>  
-```                 ' 
+```                 
 
 We successfully got the relevant content from the correct tag but are also capturing excess data (with quite a lot of special characters like `\n` and `\t`. 
 
-I looked into the cheerio documents if it gives a more atomic selector so I can drill down further to only the street address text. The latter is not contained in any surrounding tag (or attribute, class, ID…). However, before I could find such a selector, I notice that the there is a tag which could potentially act as a delimiter: `<br>`. 
+I looked into the cheerio documents if it gives a more atomic selector so I can drill down further to only the street address text. The latter is not contained in any surrounding tag (or attribute, class, ID…). However, before I could find such a selector, I noticed that the there is a tag which could potentially act as a delimiter: `<br>`. 
 
 I decided to use the `split()` function to return the text content into an array separated at the point where the `<br>` text occurs:
 
@@ -202,7 +202,7 @@ It worked an I ended up with an array of addresses. However, I saw that there we
 
 ```
 
-This is was because of the issue we uncovered in our initial recon of the file.  So when we are attaching multiple meetings to a street address, we need another element to be able to discern each individual meeting.
+This is was because of the issue we uncovered in our initial recon of the file.  Since multiple meetings are attached to a street address, we need another element to be able to discern each individual meeting.
 
 This meant we needed to reconsider the data structure for the storing the content.
 
