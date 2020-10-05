@@ -21,7 +21,7 @@ I moved the JSON data file `m04.json` from last week into this week’s data fol
 ## Part One: Plan
 I plan to use a normalised data model for the source data. This means that I envisage that the data is structured into multiple tables which are linked together via _primary keys (PK)_ and foreign keys (FK). The former uniquely identify entries _within_ a table and the latter uniquely links them with other tables. I have three tables `location`, `details` and `meeting` .
 
-![Data Model for AA Meetings Database](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-04/w04_datamodel_001.png)
+![Data Model for AA Meetings Database](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-04/w04_datamodel_001.png?raw=true)
 
 ([Data Model for AA Meetings Database](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-04/w04_datamodel_001.png))
 
