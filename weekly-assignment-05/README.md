@@ -17,7 +17,7 @@ My diary is going to record various recipes I am trying out from three different
 
 The other parameters which can be stored in the database are `recipeTitle`, `book`, `author`, `cuisine`, `rating`, `servings`, `ingredientsList,` and`imageLink`
 	
-![](/w05_datamodel.jpeg)	
+![](https://raw.githubusercontent.com/shmanzar/data-structures/master/weekly-assignment-05/w05_datamodel.jpeg)	
 	
 
 ##  Part Two: Create some data for the table in your database
@@ -132,7 +132,7 @@ Then in between each ‘put’, I used the `setTimeout()` function to stall the 
 
 The DynamoDB dashboard on AWS then displayed the five entries from the `recipeEntries` array thereby, confirming that all recipes entries were stored in the database successfully.
 
-![](/dynamo_screen.png)
+![](https://raw.githubusercontent.com/shmanzar/data-structures/master/weekly-assignment-05/dynamo_screen.png)
 
 
 ## Final thoughts
