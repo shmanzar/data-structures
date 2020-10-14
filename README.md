@@ -17,7 +17,7 @@ Assignment 2 | Parsing HTML content | **[Weekly Assignment 02](https://github.co
 Assignment 3 | Geo-tagging addresses using an API | **[Weekly Assignment 03](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-03)** 
 Assignment 4 | Interacting with an SQL database | **[Weekly Assignment 04](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-04)** 
 Assignment 5 | Interacting with a NoSQL database | **[Weekly Assignment 05](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-05)** 
-
+Assignment 6 | Constructing and running queries on SQL and NoSQL databases | **[Weekly Assignment 06](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-06)** 
 
 
 
