@@ -1,46 +1,65 @@
-var diaryEntries = [];
+const async = require('async');
+var AWS = require('aws-sdk');
 
-class DiaryEntry {
-  constructor(topic, dt, entry) {
-    this.topic = {};
-    this.topic.S = topic;
-    this.dt = {}; 
-    this.dt.N = new Date(dt).valueOf().toString();
-    this.entry = {};
-    this.entry.S = entry;
-  }
-}
-
-diaryEntries.push(new DiaryEntry('personal', 'March 10, 1976 11:30:00', "I was born!"));
-diaryEntries.push(new DiaryEntry('personal', 'October 31, 2015 13:00:00', "I piloted my first solo flight! I ate pancakes to celebrate."));
-diaryEntries.push(new DiaryEntry('work', 'June 1, 1998 08:00:00', "I started my first professional job."));
-diaryEntries.push(new DiaryEntry('work', 'September 23, 2020 12:10:00', "I taught my favorite students."));
-diaryEntries.push(new DiaryEntry('cats', 'September 26, 2020 23:00:00', "Eudora chased his tail."));
-diaryEntries.push(new DiaryEntry('work', 'October 7, 2020 12:10:00', "I taught my favorite students."));
-diaryEntries.push(new DiaryEntry('cats', 'October 6, 2020 22:15:00', "Mr. Jingles took a nap."));
-diaryEntries.push(new DiaryEntry('work', 'November 25, 2020 12:10:00', "Class doesn't meet."));
-
-console.log(diaryEntries);
-
-var AWS = require('aws-sdk'); // npm install aws-sdk
 AWS.config = new AWS.Config();
 AWS.config.region = "us-east-1";
 
-var async = require('async'); 
 var dynamodb = new AWS.DynamoDB();
 
-async.eachSeries(diaryEntries, function(value, callback) {
-    
-    var params = {};
-    params.Item = value; 
-    params.TableName = "aaronprocessblog";
-    
-    dynamodb.putItem(params, function (err, data) {
-      if (err) console.log(err, err.stack); // an error occurred
-      else     console.log(data);           // successful response
-    });
-    
-    setTimeout(callback, 1000);
-}, function() {
-    console.log('Done!');
+var recipeEntries = [];
+
+class RecipeEntry {
+  constructor(recipeID, datetime, recipeTitle, author, book, cuisine, rating, servings, ingredientList, imageLink) {
+    this.recipeID = {};
+    this.recipeID.N = recipeID.toString();
+    this.datetime = {};
+    // this.datetime.S = new Date(datetime).toDateString();
+    this.datetime.N = new Date(datetime).getTime().toString();
+    this.month = {};
+    this.month.N = new Date(datetime).getMonth().toString();
+    this.recipeTitle = {};
+    this.recipeTitle.S = recipeTitle;
+    this.author = {};
+    this.author.S = author;
+    this.book = {};
+    this.book.S = book;
+    if (cuisine != null) {
+      this.cuisine = {};
+      this.cuisine.S = cuisine;
+    }
+    this.rating = {};
+    this.rating.N = rating.toString();
+    if (servings != null) {
+      this.servings = {};
+      this.servings.N = servings.toString();
+    }
+    if (ingredientList != null) {
+      this.ingredientList = {};
+      this.ingredientList.SS = ingredientList;
+    }
+    if (imageLink != null) {
+      this.imageLink = {};
+      this.imageLink.S = imageLink;
+    }
+  }
+}
+
+recipeEntries.push(new RecipeEntry(10001, 'October 9 2020', "Pork scratchings", 'Fergus Henderson', 'Nose to Tail', 'British', '9', '4', ['pork skin', 'sea salt', 'duck fat'], 'https://www.seriouseats.com/recipes/images/20090922-pig-skin-fin.jpg'));
+recipeEntries.push(new RecipeEntry(10001, 'October 11 2020', "Roast pigeons", 'Fergus Henderson', 'Nose to Tail', 'British', '8', '1', ['plump pigeon', 'sea salt', 'butter', 'sage'], 'https://honest-food.net/wp-content/uploads/2014/12/roast-pigeon.jpg'));
+recipeEntries.push(new RecipeEntry(10002, 'October 5  2020', "Green tomato preserves", 'Edna Lewis', 'Taste of Country Cooking', 'American', '9', '12', ['green tomatoes', 'sugar', 'lemon']));
+recipeEntries.push(new RecipeEntry(10002, 'October 7 2020', "Scalloped potatoes", 'Edna Lewis', 'Taste of Country Cooking', 'American', '9', '8', ['white potatoes', 'black pepper', 'butter', 'beef stock', 'salt']));
+recipeEntries.push(new RecipeEntry(10003, 'October 13 2020', "Miso-glazed eggplant", 'Chris Ying', 'Lucky Peach', 'Japanese', '8', '6', ['Japanese eggplants', 'red miso', 'neutral oil', 'mirin', 'sesame seeds'], 'https://static01.nyt.com/images/2013/09/14/science/16recipehealth/16recipehealth-articleLarge.jpg'));
+
+console.log(recipeEntries);
+
+async.eachSeries(recipeEntries, function(value, callback) {
+  var params = {};
+  params.Item = value;
+  params.TableName = "recipeDiary";
+  dynamodb.putItem(params, function(err, data) {
+    if (err) console.log(err, err.stack); // an error occurred
+    else console.log(data); // successful response
+  });
+
+  setTimeout(callback, 2000);
 });

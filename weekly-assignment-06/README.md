@@ -1,37 +1,52 @@
-# Weekly Assignment 6
 
-You're going to continue working with the AA data in your PostgreSQL database and the Dear Diary data in DynamoDB. You will write and execute queries for both. 
+### Weekly Assignment 06 | Documentation | October 12th 2020
 
-## Part One: Write and execute a [query](https://www.postgresql.org/docs/9.4/queries.html) for your AA data PostgreSQL
+# Instructions
+Instructions for this assignment can be found on the course [repo](https://github.com/visualizedata/data-structures/tree/master/weekly_assignment_06).
 
-Data with the same format as shown in [**this sample**](https://github.com/visualizedata/data-structures/blob/master/weekly_assignment_06/data/aa_sample.csv) was added to a table in PostgreSQL in AWS (like you did in [Weekly Assignment 4](https://github.com/visualizedata/data-structures/blob/master/weekly_assignment_04.md)). It was written to a table created with this SQL statement:  
-`CREATE TABLE aadata (mtgday varchar(25), mtgtime  varchar(25), mtghour int, mtglocation varchar(75), mtgaddress varchar(75), mtgregion varchar(75), mtgtypes varchar(150));`
+# Documentation
+## Setup folders and relevant packages
+I created two files, one for each part of the assignment: 1) `app_sql.js` , and 2) `app_dynamo.js`. I had already added this week’s entries to the process blog using the `addToDynamo.js` file. I copied by `.env` file in the directory to manage the numerous credentials in the code.
 
-For **part one** of this assignment, write and execute a [SQL query](https://www.postgresql.org/docs/9.4/queries.html) for your AA data to filter meetings based on parameters that would make sense for your planned map. [[helpful SQL query overview](https://beginner-sql-tutorial.com/sql-select-statement.htm)]
 
-#### Starter Code: 
+## Part One: Writing and executing a query for the AA data PostgreSQL
 
-```javascript
+I began by using the code from *Week 04* and specifying a query which would select the existing data in my `aalocations` table in the PostgresSQL database and return some values.
+
+```js
 const { Client } = require('pg');
-const cTable = require('console.table');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 // AWS RDS POSTGRESQL INSTANCE
 var db_credentials = new Object();
-db_credentials.user = 'aaron';
-db_credentials.host = 'aa2020.c2g7qw1juwkg.us-east-1.rds.amazonaws.com';
-db_credentials.database = 'aa';
+db_credentials.user = process.env.AWSRDS_UN;
+db_credentials.host = process.env.AWSRDS_HOST;
+db_credentials.database = process.env.AWSRDS_DB;
 db_credentials.password = process.env.AWSRDS_PW;
-db_credentials.port = 5432;
+db_credentials.port = process.env.AWSRDS_PORT;
 
 // Connect to the AWS RDS Postgres database
 const client = new Client(db_credentials);
 client.connect();
 
-// Sample SQL statement to query meetings on Monday that start on or after 7:00pm: 
-var thisQuery = "SELECT mtgday, mtgtime, mtglocation, mtgaddress, mtgtypes FROM aadata WHERE mtgday = 'Monday' and mtghour >= 19;";
+// SQL statement to query meetings with addresses which include "46TH": 
+var thisQuery = "SELECT address, lat, long FROM aalocations WHERE address ~* '46TH';";
+
+
+```
+
+I chose to select all the columns (`address, lat, long)` in table  `aalocations`  and filter them with PostgresSQL’s built-in regular expression capabilities. I used the regex `~*`  (which stands for match, case-insensitive) to only return data where the address contained the words `46TH`, signifying addresses located in 46th Street.
+
+For more details on PostgresSQL’s regular expressions: [How to use Regex in SQL](https://dataschool.com/how-to-teach-people-sql/how-regex-works-in-sql/)
+
+Then I ran the query on the database using: 
+
+```js
 
 client.query(thisQuery, (err, res) => {
-    if (err) {throw err}
+    if (err) { throw err }
     else {
         console.table(res.rows);
         client.end();
@@ -39,59 +54,120 @@ client.query(thisQuery, (err, res) => {
 });
 ```
 
-Here are a few lines of the output to the console: 
 
-```
-Monday  19:00     Bethlehem Lutheran Church                      6935 4th Ave                      Beginner                                                 
-Monday  19:00     Bishop Malloy Civic Center                     15 Parkside Rd Dr                 Beginner, Wheelchair Access                              
-Monday  19:00     Blessed Virgin Mary Help of Christians Church  70-31 48th Ave                    Beginner                                                 
-Monday  19:00     Bronxville Lutheran Chapel School              172 White Plains Rd               Closed, Wheelchair Access, Women                         
-Monday  19:00     Christ the King Church                         141 Marcy Pl                      Beginner, Wheelchair Access                    
-```
+The resulting output gave a table (courtesy of the built-in  `console.table` function) returning all rows from the database which matched `46TH` in the address column:
 
-## Part Two: Write and execute a [query](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html) for your Dear Diary data DynamoDB
+![](https://raw.githubusercontent.com/shmanzar/data-structures/master/weekly-assignment-06/w06_sql_output.png)	
+	
 
-**[This data](https://github.com/visualizedata/data-structures/blob/master/weekly_assignment_06/addToDynamo.js)** was added to a "table" in DynamoDB in AWS (like you did in [Weekly Assignment 5](https://github.com/visualizedata/data-structures/blob/master/weekly_assignment_05.md)). 
 
-For **part two** of this assignment, write and execute a [NoSQL query](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html) for your Dear Diary data in DynamoDB to filter diary entries based on parameters that would make sense for your interface. 
-
-In DynamoDB, a query heavily depends on what you have named as the [primary key(s)](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey). **Partition key(s) must be unique.** In the "table" below, a *composite primary key* has been used, with `topic` as the *partition key* and `dt` as the *sort key*. Other *items* can be used to filter data, but only after the partition key or keys have been used. 
-
-#### Starter Code: 
-
-```javascript
-// npm install aws-sdk
+##  Part Two: Writing and executing a query for the Dear Diary data DynamoDB
+Similar to the previous section, I began my using my *Week 05* DynamoDB code to set up a connection to the database: 
+```js
+const async = require('async');
 var AWS = require('aws-sdk');
+
 AWS.config = new AWS.Config();
 AWS.config.region = "us-east-1";
 
 var dynamodb = new AWS.DynamoDB();
 
-var params = {
-    TableName : "aaronprocessblog",
-    KeyConditionExpression: "#tp = :topicName and dt between :minDate and :maxDate", // the query expression
-    ExpressionAttributeNames: { // name substitution, used for reserved words in DynamoDB
-        "#tp" : "topic"
-    },
-    ExpressionAttributeValues: { // the query values
-        ":topicName": {S: "work"},
-        ":minDate": {N: new Date("August 28, 2020").valueOf().toString()},
-        ":maxDate": {N: new Date("December 11, 2020").valueOf().toString()}
-    }
-};
-
-dynamodb.query(params, function(err, data) {
-    if (err) {
-        console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
-    } else {
-        console.log("Query succeeded.");
-        data.Items.forEach(function(item) {
-            console.log("***** ***** ***** ***** ***** \n", item);
-        });
-    }
-});
 ```
 
-## Submission requirements
 
-Update your GitHub repository with the relevant file(s). In Canvas, submit the URL of the specific location of this work within your `data-structures` GitHub repository. 
+I used a `params` object to construct the query. The `TableName` targets the `recipeDiary` table stored in the DynamoDB in *Week 05*.
+
+The `KeyConditionExpression` specifies the query needed to return the data from the database. We want to get all data which have a `recipeID` (the partition key) of `10001` (denoting recipes from the excellent cookbook, /Nose to Tail/). For security purposes, the `recipeID` is masked behind additional keyword `bookID`. We use `datetime` (the sort key) to only select recipes which were made in the month of September. So we modify the `minDate` and `maxDate` accordingly and importantly, parse the dates as JS time objects converted into strings: 
+
+```js 
+var params = {
+    TableName: "recipeDiary",
+    KeyConditionExpression: "recipeID = :bookID and datetime between :minDate and :maxDate", // the query expression
+
+    ExpressionAttributeValues: { // the query values
+        ":bookID": { N: '10001' },
+        ":minDate": { N: new Date("August 28, 2020").valueOf().toString() },
+        ":maxDate": { N: new Date("September 30, 2020").valueOf().toString() }
+    }
+};
+```
+
+Running the above code threw the following error:
+
+```js
+Unable to query. Error: {
+  "message": "Invalid KeyConditionExpression: Attribute name is a reserved keyword; reserved keyword: datetime",
+  "code": "ValidationException",
+  "time": "2020-10-14T04:53:36.249Z",
+  "requestId": "QV9G9TK8MO6FUI17JA1G8V3MDFVV4KQNSO5AEMVJF66Q9ASUAAJG",
+  "statusCode": 400,
+  "retryable": false,
+  "retryDelay": 13.409379731092397
+}
+```
+
+It turns out `datetime`  is a *reserved keyword* in DynamoDB and hence we need to provide a *name substitution* (`ExpressionAttributeNames`) to get around the restrictions against using reserved words for attribute names. I change `datetime` to `#dt` which is the syntactical way of specifying a name substitution:
+
+```js
+
+var params = {
+    TableName: "recipeDiary",
+    KeyConditionExpression: "recipeID = :bookID and #dt between :minDate and :maxDate", // the query expression
+    ExpressionAttributeNames: { // name substitution, used for reserved words in DynamoDB
+        "#dt": "datetime"
+    },
+    ExpressionAttributeValues: { // the query values
+        ":bookID": { N: '10001' },
+        ":minDate": { N: new Date("August 28, 2020").valueOf().toString() },
+        ":maxDate": { N: new Date("September 30, 2020").valueOf().toString() }
+    }
+};
+```
+
+The above code successfully returns the two recipes from *Nose to Tail* between *August 28 and September 30*: 
+
+```js
+Query succeeded.
+***** ***** ***** ***** ***** 
+ { recipeTitle: { S: 'Pork liver and leeks' },
+  servings: { N: '6' },
+  recipeID: { N: '10001' },
+  ingredientList:
+   { SS:
+      [ 'brandy', 'butter', 'leeks', 'paprikka', 'pork liver', 'stock' ] },
+  datetime: { N: '1601251200000' },
+  rating: { N: '9' },
+  book: { S: 'Nose to Tail' },
+  month: { N: '8' },
+  cuisine: { S: 'British' },
+  author: { S: 'Fergus Henderson' } }
+***** ***** ***** ***** ***** 
+ { recipeTitle: { S: 'Roast bone marrow and parsely salad' },
+  servings: { N: '2' },
+  recipeID: { N: '10001' },
+  ingredientList:
+   { SS:
+      [ 'Maldon salt',
+        'capers',
+        'olive oil',
+        'parsely',
+        'shallots',
+        'toast',
+        'veal marrowbones' ] },
+  datetime: { N: '1601424000000' },
+  rating: { N: '10' },
+  book: { S: 'Nose to Tail' },
+  month: { N: '8' },
+  cuisine: { S: 'British' },
+  author: { S: 'Fergus Henderson' } }
+```
+
+![](https://raw.githubusercontent.com/shmanzar/data-structures/master/weekly-assignment-06/w06_dynamo_output.png)	
+
+
+
+## Final thoughts
+
+I realise now that I must go back for the remainder of the data in the AA meetings. It is best to iterate once more on the schema of the SQL database I am using to store the meetings data.
+
+I suspect for the process blog, the primary key and structure I am following now works but it will still do me good if I make a front-end mockup to see how users will interact with the recipe data, and then observe if the current keys still satisfy those requirements.
