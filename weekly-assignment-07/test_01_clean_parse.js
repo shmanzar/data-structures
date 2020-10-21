@@ -11,35 +11,25 @@ var content = fs.readFileSync(filename + '.txt');
 // load `content` into a cheerio object
 var $ = cheerio.load(content);
 
-// var aa = {
-//     zone: 'Zone 4',
-//     address: [],
-//     meeting_data: []
-
-// };
-// aa.meetings = []
 
 var aa = new Object()
 aa.table = []
-// var meetings_list = []
-
 
 
 
 let counter = 1;
 $('tr tr tr').each(function(i, outer_elem) {
     var Address = new Object()
-    Address.meetings_list = []
+    Address.meetings_list = new Array
 
     $(outer_elem).find('td').eq(0).each(function(i, elem) {
 
-        // console.log($(elem).html())
         if ($(elem).attr('style') === 'border-bottom:1px solid #e3e3e3; width:260px') {
-            // console.log($(elem).html().split('<br>')[2].trim().match(/^\d{1,5}.+?(?=,|-)/gm)[0])
-            Address.meeting_number = counter
+
+            Address.location_number = counter
             Address.building_name = $(elem).html().split('</h4>')[0].trim().split("<h4 style=\"margin:0;padding:0;\">")[1]
             Address.street_address = $(elem).html().split('<br>')[2].trim().match(/^\d{1,5}.+?(?=,|-)/gm)[0]
-            Address.secondary_address = $(elem).html().split('<br>')[2].trim().split(',').splice(1, 2)
+            Address.secondary_address = $(elem).html().split('<br>')[2].trim().split(',').splice(1, 2)[0].trim()
             Address.meeting_name = $(elem).html().split('<br>')[1].trim().match(/\b(\d{1,3}\s|\d{1,3}nd\s|\d{1,3}rd\s|\d{1,3}st\s|\d{1,3}st\s|[A-Z\s])+\b.+?(?=-)/gm)[0]
             Address.details = $(elem).find('div').text().trim()
             Address.wheelchair = $(elem).text().trim().match(/(Wheelchair access)/gm)
@@ -53,14 +43,8 @@ $('tr tr tr').each(function(i, outer_elem) {
 
 
     })
-    // aa.table.push(Address)
+    aa.table.push(Address)
 
-
-
-    // console.log(aa)
-
-
-    // var meetings_list = []
 
     $(outer_elem).find('td').eq(1).each(function(i, elem) {
 
@@ -78,7 +62,6 @@ $('tr tr tr').each(function(i, outer_elem) {
 
         // console.log(meetingDumpTD)
         var mdSpecialInterest;
-
         for (var i = 0; i < meetingDumpTD.length; i++) {
             var interest = meetingDumpTD[i].split('Special Interest')[1];
 
@@ -122,7 +105,7 @@ $('tr tr tr').each(function(i, outer_elem) {
 
             // push into Meeting_Instance object
             var Meeting_Instance = new Object();
-
+            Meeting_Instance.meeting_id = i + 1;
             Meeting_Instance.typeCode = meetTypeCode;
             Meeting_Instance.typeName = meetTypeCodeName;
             Meeting_Instance.weekDay = meetsplit[0];
@@ -130,54 +113,23 @@ $('tr tr tr').each(function(i, outer_elem) {
             Meeting_Instance.startTime_amPm = s_a_p;
             Meeting_Instance.endTime = time_end;
             Meeting_Instance.endTime_amPm = e_a_p;
-            // Meeting_Instance.hour = parseInt(time_end) - parseInt(time_start);
             Meeting_Instance.interest = mdSpecialInterest;
             // console.log(Address.meetings)
 
             // meetings_list.push(Meeting_Instance)
             Address.meetings_list.push(Meeting_Instance)
-            // console.log(Meeting_Instance)
 
-        } // for loop
+        } // for loop end
         // console.log(Address.meetings_list)
 
     }) //2nd find 
-    aa.table.push(Address.meetings_list)
 
+    // aa.table.push(Address.meetings_list) // AH - works
 
+}) //overall find (tr)
 
-    // console.log(aa)
-
-})
-// Address.meetings = meetings_list
 // aa.table.push(Address)
 
 
 
-// console.log(meetings_list)
-
-
-
-
-
 console.log(aa.table)
-
-// fs.writeFileSync(filename + '_JSON' + '.txt', JSON.stringify(aa));
-
-
-// console.log(aa.meetings)
-
-
-
-// aa.meetings.push(Address);
-
-// aa.address.push({
-//     meeting_number: counter,
-//     building_name: $(elem).html().split('</h4>')[0].trim().split("<h4 style=\"margin:0;padding:0;\">")[1],
-//     street_address: $(elem).html().split('<br>')[2].trim().match(/^\d{1,5}.+?(?=,|-)/gm)[0],
-//     secondary_address: $(elem).html().split('<br>')[2].trim().split(',').splice(1, 2),
-//     meeting_name: $(elem).html().split('<br>')[1].trim().match(/\b(\d{1,3}\s|\d{1,3}nd\s|\d{1,3}rd\s|\d{1,3}st\s|\d{1,3}st\s|[A-Z\s])+\b.+?(?=-)/gm)[0],
-//     details: $(elem).find('div').text().trim(),
-//     wheelchair: $(elem).text().trim().match(/(Wheelchair access)/gm)
-
-// })
