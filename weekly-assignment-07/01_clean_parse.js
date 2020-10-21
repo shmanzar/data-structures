@@ -31,9 +31,9 @@ $('td').each(function(I, elem) {
             street_address: $(elem).html().split('<br>')[2].trim().match(/^\d{1,5}.+?(?=,|-)/gm)[0],
             secondary_address: $(elem).html().split('<br>')[2].trim().split(',').splice(1, 2),
             meeting_name: $(elem).html().split('<br>')[1].trim().match(/\b(\d{1,3}\s|\d{1,3}nd\s|\d{1,3}rd\s|\d{1,3}st\s|\d{1,3}st\s|[A-Z\s])+\b.+?(?=-)/gm)[0],
-            // details: $('div > table > tbody > tr:nth-child(1) > td:nth-child(1) > div(8)').content()
-            // meeting_time: if ($(elem).attr('style') === 'border-bottom:1px solid #e3e3e3;width:350px') {
-            //     $(elem).html().split('<br>')
+            details: $(elem).find('div').text().trim(),
+            wheelchair: $(elem).text().trim().match(/(Wheelchair access)/gm),
+
 
         })
         counter++;
@@ -55,9 +55,3 @@ $('td').each(function(I, elem) {
 
 
 // fs.writeFileSync(filename + '_JSON' + '.txt', JSON.stringify(aa));
-
-//     meeting_day: $(elem).html().trim().split('<br>').forEach(e => {
-//         console.log(e.match(/(Mo(n(day)?)?|Tu(e(sday)?)?|We(d(nesday)?)?|Th(u(rsday)?)?|Fr(i(day)?)?|Sa(t(urday)?)?|Su(n(day)?)?)+/gm))
-//         // console.log(e.split('</b>'))
-//     })
-// })
