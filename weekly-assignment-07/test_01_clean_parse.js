@@ -21,16 +21,17 @@ var $ = cheerio.load(content);
 
 var aa = new Object()
 aa.table = []
-var Address = new Object()
-var Meeting_Instance = new Object();
-var meetings_list = []
+// var meetings_list = []
 
 
 
 
 let counter = 1;
-$('tr tr tr').each(function(i, elem) {
-    $(elem).find('td').eq(0).each(function(i, elem) {
+$('tr tr tr').each(function(i, outer_elem) {
+    var Address = new Object()
+    Address.meetings_list = []
+
+    $(outer_elem).find('td').eq(0).each(function(i, elem) {
 
         // console.log($(elem).html())
         if ($(elem).attr('style') === 'border-bottom:1px solid #e3e3e3; width:260px') {
@@ -47,7 +48,7 @@ $('tr tr tr').each(function(i, elem) {
 
 
         counter++;
-        aa.table.push(Address)
+        // aa.table.push(Address)
         // console.log(aa.table)
 
 
@@ -61,7 +62,7 @@ $('tr tr tr').each(function(i, elem) {
 
     // var meetings_list = []
 
-    $(elem).find('td').eq(1).each(function(i, elem) {
+    $(outer_elem).find('td').eq(1).each(function(i, elem) {
 
         // clean everything in this column:
         var meetingDump = $(elem).text().trim();
@@ -120,6 +121,7 @@ $('tr tr tr').each(function(i, elem) {
 
 
             // push into Meeting_Instance object
+            var Meeting_Instance = new Object();
 
             Meeting_Instance.typeCode = meetTypeCode;
             Meeting_Instance.typeName = meetTypeCodeName;
@@ -130,25 +132,25 @@ $('tr tr tr').each(function(i, elem) {
             Meeting_Instance.endTime_amPm = e_a_p;
             // Meeting_Instance.hour = parseInt(time_end) - parseInt(time_start);
             Meeting_Instance.interest = mdSpecialInterest;
-            // console.log(Meeting_Instance)
             // console.log(Address.meetings)
 
+            // meetings_list.push(Meeting_Instance)
+            Address.meetings_list.push(Meeting_Instance)
+            // console.log(Meeting_Instance)
 
+        } // for loop
+        // console.log(Address.meetings_list)
 
-        }
+    }) //2nd find 
+    aa.table.push(Address.meetings_list)
 
-
-
-    })
 
 
     // console.log(aa)
 
 })
-meetings_list.push(Meeting_Instance)
-Address.meetings = meetings_list
-aa.table.push(Address)
-console.log(aa.table[2])
+// Address.meetings = meetings_list
+// aa.table.push(Address)
 
 
 
@@ -158,10 +160,10 @@ console.log(aa.table[2])
 
 
 
-// console.log(aa)
+console.log(aa.table)
 
+// fs.writeFileSync(filename + '_JSON' + '.txt', JSON.stringify(aa));
 
-// console.log(final_push.reduce(((r, c) => Object.assign(r, c)), {}));
 
 // console.log(aa.meetings)
 
