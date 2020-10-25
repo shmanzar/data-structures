@@ -1,3 +1,4 @@
+
 ### Weekly Assignment 07 | Documentation | October 15th 2020
 
 # Instructions
@@ -6,3 +7,18 @@ Instructions for this assignment can be found on the course [repo](https://githu
 # Documentation
 ## Setup folders and relevant packages
 
+
+
+## Parsing and cleaning
+
+
+## Retrieving data from all zones
+
+
+## Geocoding all locations
+
+
+## Inserting into an SQL database
+
+
+## Accessing data
