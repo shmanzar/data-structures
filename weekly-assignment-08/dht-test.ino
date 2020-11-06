@@ -1,6 +1,9 @@
 // This #include statement was automatically added by the Particle IDE.
 #include "Adafruit_DHT_Particle.h"
 
+// This #include statement was automatically added by the Particle IDE.
+#include "Adafruit_DHT_Particle.h"
+
 // Example testing sketch for various DHT humidity/temperature sensors
 // Written by ladyada, public domain
 
@@ -17,6 +20,8 @@
 // Connect a 10K resistor from pin 2 (data) to pin 1 (power) of the sensor
 
 double tempF = 0; 
+// char thisReading[100] = "";
+String thisReading = "";
 
 DHT dht(DHTPIN, DHTTYPE);
 int loopCount;
@@ -25,7 +30,9 @@ void setup() {
 	Serial.begin(9600); 
 	Serial.println("DHTxx test!");
 	Particle.publish("state", "DHTxx test start");
-	Particle.variable("temp", tempF);
+// 	Particle.variable("temp", tempF);
+	Particle.variable("myReadings", thisReading);
+
 
 	dht.begin();
 	loopCount = 0;
@@ -44,8 +51,7 @@ void loop() {
 	float t = dht.getTempCelcius();
 // Read temperature as Farenheit
 	float f = dht.getTempFarenheit();
-	
-	tempF = f; 
+// 	tempF = f; 
   
 // Check if any reads failed and exit early (to try again).
 	if (isnan(h) || isnan(t) || isnan(f)) {
@@ -58,6 +64,8 @@ void loop() {
 	float hi = dht.getHeatIndex();
 	float dp = dht.getDewPoint();
 	float k = dht.getTempKelvin();
+	thisReading = String::format("{\"Hum(\%)\": %4.2f, \"Temp(°C)\": %4.2f, \"DP(°C)\": %4.2f, \"HI(°C)\": %4.2f}", h, t, dp, hi);
+// 	thisReading = ("{\"Hum(\%)\": %4.2f, \"Temp(°C)\": %4.2f, \"DP(°C)\": %4.2f, \"HI(°C)\": %4.2f}", h, t, dp, hi);
 
 	Serial.print("Humid: "); 
 	Serial.print(h);
