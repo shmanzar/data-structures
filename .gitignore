@@ -74,4 +74,4 @@ node_modules/
 *.env
 
 # pm2 env files
-ecosystem.config*
+ecosystem.config.js

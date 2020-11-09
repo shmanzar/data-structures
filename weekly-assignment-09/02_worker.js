@@ -74,4 +74,4 @@ var getAndWriteData = function() {
     })
 }
 
-setInterval(getAndWriteData, 20000)
+setInterval(getAndWriteData, 30000)
