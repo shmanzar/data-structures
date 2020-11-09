@@ -72,3 +72,6 @@ node_modules/
 
 # dotenv files
 *.env
+
+# pm2 env files
+ecosystem.config*
