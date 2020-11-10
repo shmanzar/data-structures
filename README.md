@@ -19,6 +19,10 @@ Assignment 4 | Interacting with an SQL database | **[Weekly Assignment 04](https
 Assignment 5 | Interacting with a NoSQL database | **[Weekly Assignment 05](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-05)** 
 Assignment 6 | Constructing and running queries on SQL and NoSQL databases | **[Weekly Assignment 06](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-06)** 
 Assignment 7 | Data cleaning | **[Weekly Assignment 07](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-07)** 
+Assignment 8 | Setting up an IoT sensor | **[Weekly Assignment 08](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-08)** 
+Assignment 9 | Collecting sensor and related data using APIs | **[Weekly Assignment 09](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-09)**
+Assignment 10 | Visualization interface iterations | **[Weekly Assignment 10](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-10)**
+
 
 
 

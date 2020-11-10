@@ -19,9 +19,9 @@ const client = new Client(db_credentials);
 client.connect();
 
 // Sample SQL statement to create a table: 
-var thisQuery = "CREATE TABLE sensorData ( tempValue double precision, humValue double precision, dpValue double precision, hixValue double precision, sensorTime timestamp DEFAULT current_timestamp );";
+var sensorQuery = "CREATE TABLE sensorData ( tempValue double precision, humValue double precision, dpValue double precision, hixValue double precision, sensorTime timestamp DEFAULT current_timestamp );";
 
-var thisQuery = "CREATE TABLE owData ( description varchar(10000), icon varchar(1000), tempC double precision, feelsTemp double precision, tempMin double precision, tempMax double precision, pressure double precision, humidity double precision, windSpeed double precision, windDegree double precision, clouds double precision, dateTime varchar(10000), status varchar(1000), apiTime timestamp DEFAULT current_timestamp );";
+var owQuery = "CREATE TABLE owData ( description varchar(10000), icon varchar(1000), tempC double precision, feelsTemp double precision, tempMin double precision, tempMax double precision, pressure double precision, humidity double precision, windSpeed double precision, windDegree double precision, clouds double precision, dateTime varchar(10000), status varchar(1000), apiTime timestamp DEFAULT current_timestamp );";
 
 // var thisQuery = "SELECT * FROM owData;";
 
@@ -30,7 +30,11 @@ var thisQuery = "CREATE TABLE owData ( description varchar(10000), icon varchar(
 
 // var thisQuery = 'DROP TABLE sensorData;'
 
-client.query(thisQuery, (err, res) => {
+client.query(sensorQuery, (err, res) => {
+    console.log(err, res);
+});
+
+client.query(owQuery, (err, res) => {
     console.log(err, res);
     client.end();
 });
