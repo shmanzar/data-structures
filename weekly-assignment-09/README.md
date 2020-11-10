@@ -17,6 +17,6 @@ I installed the `pm2` NPM package to use it as a process manager and run the API
 
 ## Database structure
 
-![Data Model for IoT sensor data](https://github.com/shmanzar/data-structures/tree/master/weekly-assignment-09/w04_datamodel_001.png?raw=true)
+![](https://raw.githubusercontent.com/shmanzar/data-structures/master/weekly-assignment-09/w09_datamodel.jpeg)
 
 
