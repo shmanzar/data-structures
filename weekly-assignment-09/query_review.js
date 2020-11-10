@@ -21,6 +21,8 @@ client.connect();
 var thisQuery = "SELECT * FROM sensorData;"; // print all values
 var secondQuery = "SELECT COUNT (*) FROM sensorData;"; // print the number of rows
 var thirdQuery = "SELECT tempValue, COUNT (*) FROM sensorData GROUP BY tempValue;"; // print the number of rows for each sensorValue
+var fourthQuery = "SELECT * FROM owData;"; // print all values
+var fifthQuery = "SELECT COUNT (*) FROM owData;"; // print the number of rows
 
 client.query(thisQuery, (err, res) => {
     if (err) { throw err }
@@ -37,6 +39,20 @@ client.query(secondQuery, (err, res) => {
 });
 
 client.query(thirdQuery, (err, res) => {
+    if (err) { throw err }
+    else {
+        console.table(res.rows);
+    }
+});
+
+client.query(fourthQuery, (err, res) => {
+    if (err) { throw err }
+    else {
+        console.table(res.rows);
+    }
+});
+
+client.query(fifthQuery, (err, res) => {
     if (err) { throw err }
     else {
         console.table(res.rows);
