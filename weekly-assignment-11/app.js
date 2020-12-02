@@ -55,7 +55,8 @@ var jx = `;
     //         style: 'mapbox://styles/smanzar/cki6j8dxf3o2p19trqspv7hoh'
     //     });
     // </script>
-    
+  <script>
+
     var mymap = L.map('mapid').setView([40.734636,-73.994997], 13);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
@@ -66,7 +67,12 @@ var jx = `;
         accessToken: 'pk.eyJ1Ijoic21hbnphciIsImEiOiJja2k2ajRjaWowMXEyMnFxZ2IxbTRhaDkwIn0.bZyOlzap-1dfxKN_BHcCPw'
     }).addTo(mymap);
     for (var i=0; i<data.length; i++) {
-        L.marker( [data[i].lat, data[i].lon] ).bindPopup(JSON.stringify(data[i].meetings)).addTo(mymap);
+        var lat = data[i].geocoord.slice(1,-1).split(',')[0]
+        var lon = data[i].geocoord.slice(1,-1).split(',')[1]
+        console.log(lat)
+        console.log(lon)
+        L.marker( lat, lon ).bindPopup(JSON.stringify(data[i].meetings)).addTo(mymap);
+        // L.marker( [data[i].lat, data[i].lon] ).bindPopup(JSON.stringify(data[i].meetings)).addTo(mymap);
     }
     </script>
     </body>
@@ -82,7 +88,8 @@ app.get('/aa', function(req, res) {
 
     var now = moment.tz(Date.now(), "America/New_York");
     var dayy = now.day().toString();
-    var hourr = now.hour().toString();
+    var hourr = now.format('h:mmA').toString();
+    console.log(hourr)
 
     // Connect to the AWS RDS Postgres database
     const client = new Pool(db_credentials);
@@ -90,12 +97,14 @@ app.get('/aa', function(req, res) {
     // SQL query 
     // var thisQuery = `SELECT *, json_agg(json_build_object('loc', building_name, 'address', address, 'time', endtime, 'name', meeting_name, 'day', weekday, 'types', meeting_typename, 'shour', starttime)) as meetings FROM aalocations WHERE day = ` + dayy + 'and shour >= ' + hourr +
     //     `GROUP BY geocoord.latlong;`;
-    var thisQuery = `SELECT * FROM aalocations`;
+    var thisQuery = `SELECT geocoord, json_agg(json_build_object('loc', building_name, 'address', address, 'time', endtime, 'name', meeting_name, 'types', meeting_typename, 'shour', starttime)) as meetings FROM aalocations GROUP BY geocoord;`;
+    // var thisQuery = `SELECT geocoord FROM aalocations`;
 
     client.query(thisQuery, (qerr, qres) => {
         if (qerr) { throw qerr }
 
         else {
+            // console.log(JSON.stringify(qres.rows))
             var resp = hx + JSON.stringify(qres.rows) + jx;
             res.send(resp);
             client.end();
@@ -111,8 +120,8 @@ app.get('/temperature', function(req, res) {
     const client = new Pool(db_credentials);
 
     // SQL query 
-    var q = `SELECT EXTRACT(DAY FROM sensortime) as sensorday,
-             AVG(tempvalue::int) as num_obs
+    var q = `SELECT EXTRACT(DAY FROM sensorTime) as sensorday,
+             AVG(tempValue::int) as num_obs
              FROM sensorData
              GROUP BY sensorday
              ORDER BY sensorday;`;
