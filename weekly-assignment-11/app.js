@@ -5,6 +5,8 @@ var AWS = require('aws-sdk');
 const moment = require('moment-timezone');
 const handlebars = require('handlebars');
 var fs = require('fs');
+const dotenv = require('dotenv');
+dotenv.config({});
 
 // const indexSource = fs.readFileSync("templates/sensor.txt").toString();
 // var template = handlebars.compile(indexSource, { strict: true });
@@ -102,4 +104,19 @@ app.get('/aa', function(req, res) {
             console.log('2) responded to request for aa meeting data');
         }
     });
+});
+
+
+// serve static files in /public
+app.use(express.static('public'));
+
+app.use(function(req, res, next) {
+    res.status(404).send("Sorry can't find that!");
+});
+
+// listen on port 8080
+var port = process.env.PORT || 8080;
+
+app.listen(port, function() {
+    console.log('Server listening...');
 });
