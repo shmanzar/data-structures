@@ -1,5 +1,6 @@
 const { Client } = require('pg');
 const dotenv = require('dotenv');
+const fs = require('fs')
 
 // const cTable = require('console.table');
 dotenv.config();
@@ -28,6 +29,8 @@ client.query(thisQuery, (err, res) => {
     if (err) { throw err }
     else {
         console.table(res.rows);
+
+
     }
 });
 
