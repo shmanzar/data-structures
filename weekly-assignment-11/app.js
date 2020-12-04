@@ -22,6 +22,18 @@ db_credentials.database = process.env.AWSRDS_DB;
 db_credentials.password = process.env.AWSRDS_PW;
 db_credentials.port = process.env.AWSRDS_PORT;
 
+//<div id='map' style='width: 700px; height: 600px;'></div>
+//       <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+// <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+
+//         mapboxgl.accessToken = 'pk.eyJ1Ijoic21hbnphciIsImEiOiJja2k2ajRjaWowMXEyMnFxZ2IxbTRhaDkwIn0.bZyOlzap-1dfxKN_BHcCPw';
+//     var map = new mapboxgl.Map({
+//         container: 'map',
+//         style: 'mapbox://styles/smanzar/cki6j8dxf3o2p19trqspv7hoh'
+//     });
+// << / script >
+//   <script>
+
 // create templates
 var hx = `<!doctype html>
 <html lang="en">
@@ -31,31 +43,28 @@ var hx = `<!doctype html>
   <meta name="description" content="Meetings of AA in Manhattan">
   <meta name="author" content="AA">
   <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-       crossorigin=""/>
-           <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+   <style>#mapid { height: 880px; }</style>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+   
+</head>
+
 </head>
 <body>
+
 <h1>AA data endpoint</h1>
-// <div id='map' style='width: 700px; height: 600px;'></div>
 <div id="mapid"></div>
-<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
-  integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
-  crossorigin=""></script>
+
   <script>
   var data = 
   `;
 
 var jx = `;
-    //         mapboxgl.accessToken = 'pk.eyJ1Ijoic21hbnphciIsImEiOiJja2k2ajRjaWowMXEyMnFxZ2IxbTRhaDkwIn0.bZyOlzap-1dfxKN_BHcCPw';
-    //     var map = new mapboxgl.Map({
-    //         container: 'map',
-    //         style: 'mapbox://styles/smanzar/cki6j8dxf3o2p19trqspv7hoh'
-    //     });
-    // </script>
-  <script>
+
 
     var mymap = L.map('mapid').setView([40.734636,-73.994997], 13);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -63,21 +72,20 @@ var jx = `;
     tileSize: 512,
     maxZoom: 18,
     zoomOffset: -1,
-    id: 'mapbox/streets-v11',
+    id: 'smanzar/cki6j8dxf3o2p19trqspv7hoh',
         accessToken: 'pk.eyJ1Ijoic21hbnphciIsImEiOiJja2k2ajRjaWowMXEyMnFxZ2IxbTRhaDkwIn0.bZyOlzap-1dfxKN_BHcCPw'
     }).addTo(mymap);
     for (var i=0; i<data.length; i++) {
-        var lat = data[i].geocoord.slice(1,-1).split(',')[0]
-        var lon = data[i].geocoord.slice(1,-1).split(',')[1]
-        console.log(lat)
-        console.log(lon)
-        L.marker( lat, lon ).bindPopup(JSON.stringify(data[i].meetings)).addTo(mymap);
-        // L.marker( [data[i].lat, data[i].lon] ).bindPopup(JSON.stringify(data[i].meetings)).addTo(mymap);
+        var lat = parseFloat(data[i].geocoord.slice(1,-1).split(',')[0].trim())
+        var lon = parseFloat(data[i].geocoord.slice(1,-1).split(',')[1].trim())
+        console.log([lat, lon])
+        L.marker([lat, lon]).bindPopup(JSON.stringify(data[i])).addTo(mymap);
     }
     </script>
     </body>
     </html>`;
 
+// L.marker( [data[i].lat, data[i].lon] ).bindPopup(JSON.stringify(data[i].address)).addTo(mymap);
 
 app.get('/', function(req, res) {
     res.send('<h3>SM Code demo site</h3><ul><li><a href="/aa">aa meetings</a></li><li><a href="/temperature">temp sensor</a></li><li><a href="/processblog">process blog</a></li></ul>');
@@ -121,7 +129,7 @@ app.get('/temperature', function(req, res) {
 
     // SQL query 
     var q = `SELECT EXTRACT(DAY FROM sensorTime) as sensorday,
-             AVG(tempValue::int) as num_obs
+             MIN(tempValue::int) as num_obs
              FROM sensorData
              GROUP BY sensorday
              ORDER BY sensorday;`;
