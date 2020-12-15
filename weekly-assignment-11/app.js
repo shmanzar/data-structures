@@ -43,6 +43,8 @@ var hx = `<!doctype html>
   <meta name="description" content="Meetings of AA in Manhattan">
   <meta name="author" content="AA">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Neuton:ital,wght@0,200;0,300;0,400;0,700;0,800;1,400&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
    crossorigin=""/>
@@ -56,7 +58,8 @@ var hx = `<!doctype html>
 </head>
 <body>
 
-<h1>AA data endpoint</h1>
+<h1 class = "title">AA Meetings in Manhattan</h1>
+<h2 class = "subtitle">Which meeting would you like to attend?</h2>
 <div id="mapid"></div>
 
   <script>
@@ -78,7 +81,7 @@ var jx = `;
     for (var i=0; i<data.length; i++) {
         var lat = parseFloat(data[i].geocoord.slice(1,-1).split(',')[0].trim())
         var lon = parseFloat(data[i].geocoord.slice(1,-1).split(',')[1].trim())
-        console.log([lat, lon])
+        // console.log([lat, lon])
         L.marker([lat, lon]).bindPopup(JSON.stringify(data[i])).addTo(mymap);
     }
     </script>
@@ -110,7 +113,7 @@ app.get('/aa', function(req, res) {
     WHERE weekday = ` + dayy +
         ` GROUP BY geocoord
         ;`;
-    console.log(thisQuery)
+    // console.log(thisQuery)
     // var thisQuery = `SELECT *, json_agg(json_build_object('loc', building_name, 'address', address, 'time', endtime, 'name', meeting_name, 'day', weekday, 'types', meeting_typename, 'shour', starttime)) as meetings FROM aalocations WHERE day = ` + dayy + 'and shour >= ' + hourr +
     //     `GROUP BY geocoord.latlong;`;
 

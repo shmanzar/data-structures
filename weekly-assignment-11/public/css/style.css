@@ -10,11 +10,19 @@
 		width: 100%;
 	}
 
+	.title {
+		color: #7b2836;
+		font-family: "Merriweather";
+		font-weight: 900;
+		padding-left: 1%;
+	}
 
 	.subtitle {
 		color: #7b2836;
 		font-family: "PT Sans";
 		font-weight: normal;
-		text-align: right;
+		padding-left: 1%;
+
+		/*text-align: right;*/
 	}
 	
