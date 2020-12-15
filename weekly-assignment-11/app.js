@@ -11,8 +11,8 @@ dotenv.config();
 const indexSource = fs.readFileSync("templates/sensor.txt").toString();
 var template = handlebars.compile(indexSource, { strict: true });
 
-// const pbSource = fs.readFileSync("templates/pb.txt").toString();
-// var pbtemplate = handlebars.compile(pbSource, { strict: true });
+const pbSource = fs.readFileSync("templates/pb.txt").toString();
+var pbtemplate = handlebars.compile(pbSource, { strict: true });
 
 // AWS RDS credentials
 var db_credentials = new Object();
@@ -95,17 +95,25 @@ app.get('/', function(req, res) {
 app.get('/aa', function(req, res) {
 
     var now = moment.tz(Date.now(), "America/New_York");
-    var dayy = now.day().toString();
+    // var dayy = now.format('dddd').toString() + 's';
+    var dayy = "'" + now.format('dddd').toString() + "s'" //POSTGRES gotcha: NEED TO WRAP single quotes with doubles
     var hourr = now.format('h:mmA').toString();
-    console.log(hourr)
+    console.log(dayy)
 
     // Connect to the AWS RDS Postgres database
     const client = new Pool(db_credentials);
 
     // SQL query 
+
+    var thisQuery = `SELECT geocoord, json_agg(json_build_object('loc', building_name, 'address', address, 'time', endtime, 'name', meeting_name, 'types', meeting_typename, 'shour', starttime, 'day', weekday)) as meetings 
+    FROM aalocations 
+    WHERE weekday = ` + dayy +
+        ` GROUP BY geocoord
+        ;`;
+    console.log(thisQuery)
     // var thisQuery = `SELECT *, json_agg(json_build_object('loc', building_name, 'address', address, 'time', endtime, 'name', meeting_name, 'day', weekday, 'types', meeting_typename, 'shour', starttime)) as meetings FROM aalocations WHERE day = ` + dayy + 'and shour >= ' + hourr +
     //     `GROUP BY geocoord.latlong;`;
-    var thisQuery = `SELECT geocoord, json_agg(json_build_object('loc', building_name, 'address', address, 'time', endtime, 'name', meeting_name, 'types', meeting_typename, 'shour', starttime)) as meetings FROM aalocations GROUP BY geocoord;`;
+
     // var thisQuery = `SELECT geocoord FROM aalocations`;
 
     client.query(thisQuery, (qerr, qres) => {
@@ -141,6 +149,35 @@ app.get('/temperature', function(req, res) {
             res.end(template({ sensordata: JSON.stringify(qres.rows) }));
             client.end();
             console.log('1) responded to request for sensor graph');
+        }
+    });
+});
+
+app.get('/processblog', function(req, res) {
+    // AWS DynamoDB credentials
+    AWS.config = new AWS.Config();
+    AWS.config.region = "us-east-1";
+
+    // Connect to the AWS DynamoDB database
+    var dynamodb = new AWS.DynamoDB();
+
+    // DynamoDB (NoSQL) query
+    var params = {
+        TableName: "recipeDiary",
+        KeyConditionExpression: "recipeID = :bookID", // the query expression
+        ExpressionAttributeValues: { // the query values
+            ":bookID": { N: '10001' }
+        }
+    };
+
+    dynamodb.query(params, function(err, data) {
+        if (err) {
+            console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+            throw (err);
+        }
+        else {
+            res.end(pbtemplate({ pbdata: JSON.stringify(data.Items) }));
+            console.log('3) responded to request for process blog data');
         }
     });
 });
