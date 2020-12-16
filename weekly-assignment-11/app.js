@@ -59,6 +59,7 @@ var hx = `<!doctype html>
 <body>
 
 <h1 class = "title">AA Meetings in Manhattan</h1>
+<h2 class = "subtitle"><span id ="day"></span></h2>
 <h2 class = "subtitle">Which meeting would you like to attend?</h2>
 <div id="mapid"></div>
 
@@ -79,11 +80,27 @@ var jx = `;
         accessToken: 'pk.eyJ1Ijoic21hbnphciIsImEiOiJja2k2ajRjaWowMXEyMnFxZ2IxbTRhaDkwIn0.bZyOlzap-1dfxKN_BHcCPw'
     }).addTo(mymap);
     for (var i=0; i<data.length; i++) {
+        // var customPopup = "<b> Meeting location: </b><p>" + JSON.stringify(data[i]['meetings'][i].loc) + "</p> <br/><b> Address:</b><p>" + JSON.stringify(data[1]['meetings'][0].loc.address) + "</p> <br/><b> Meeting name::</b><p>" + JSON.stringify(data[1]['meetings'][0].locname) + "</p> <br/><b> Starts at:</b><p>" + JSON.stringify(data[1]['meetings'][0].locshour) + "</p> <br/><b> Ends at:</b><p>" + JSON.stringify(data[1]['meetings'][0].loctime) + "</p> <br/><b> Day:</b><p>" + JSON.stringify(data[1]['meetings'][0].locday);
         var lat = parseFloat(data[i].geocoord.slice(1,-1).split(',')[0].trim())
         var lon = parseFloat(data[i].geocoord.slice(1,-1).split(',')[1].trim())
         // console.log([lat, lon])
-        L.marker([lat, lon]).bindPopup(JSON.stringify(data[i])).addTo(mymap);
+        L.marker([lat, lon]).bindPopup(JSON.stringify(data[i].meetings)).addTo(mymap);
+        // L.marker([lat, lon]).bindPopup(customPopup).addTo(mymap);
+
     }
+    var d = new Date();
+var weekday = new Array(7);
+weekday[0] = "Sunday";
+weekday[1] = "Monday";
+weekday[2] = "Tuesday";
+weekday[3] = "Wednesday";
+weekday[4] = "Thursday";
+weekday[5] = "Friday";
+weekday[6] = "Saturday";
+
+var n = weekday[d.getDay()]
+        var span = document.getElementById('day');
+        span.innerText = span.textContent = "You are viewing all the meetings for " + n;
     </script>
     </body>
     </html>`;
@@ -100,8 +117,10 @@ app.get('/aa', function(req, res) {
     var now = moment.tz(Date.now(), "America/New_York");
     // var dayy = now.format('dddd').toString() + 's';
     var dayy = "'" + now.format('dddd').toString() + "s'" //POSTGRES gotcha: NEED TO WRAP single quotes with doubles
-    var hourr = now.format('h:mmA').toString();
-    console.log(dayy)
+    var hourr = "'" + now.format('h:mmA').toString() + "'";
+    console.log(dayy, hourr)
+
+
 
     // Connect to the AWS RDS Postgres database
     const client = new Pool(db_credentials);
@@ -110,7 +129,7 @@ app.get('/aa', function(req, res) {
 
     var thisQuery = `SELECT geocoord, json_agg(json_build_object('loc', building_name, 'address', address, 'time', endtime, 'name', meeting_name, 'types', meeting_typename, 'shour', starttime, 'day', weekday)) as meetings 
     FROM aalocations 
-    WHERE weekday = ` + dayy +
+    WHERE weekday = ` + dayy + ` and starttime >= ` + hourr +
         ` GROUP BY geocoord
         ;`;
     // console.log(thisQuery)
@@ -140,7 +159,9 @@ app.get('/temperature', function(req, res) {
 
     // SQL query 
     var q = `SELECT EXTRACT(DAY FROM sensorTime) as sensorday,
-             MIN(tempValue::int) as num_obs
+             AVG(tempValue) as tempvalue,
+             AVG(humValue) as humvalue,
+             AVG(hixvalue) as heatvalue
              FROM sensorData
              GROUP BY sensorday
              ORDER BY sensorday;`;
@@ -160,6 +181,14 @@ app.get('/processblog', function(req, res) {
     // AWS DynamoDB credentials
     AWS.config = new AWS.Config();
     AWS.config.region = "us-east-1";
+    console.log(req.query.type)
+    var month = "1601251200000";
+    if (["1601251200000",
+            "1601424000000",
+            "1602374400000"
+        ].includes(req.query.type)) {
+        month = req.query.type
+    }
 
     // Connect to the AWS DynamoDB database
     var dynamodb = new AWS.DynamoDB();
@@ -167,9 +196,15 @@ app.get('/processblog', function(req, res) {
     // DynamoDB (NoSQL) query
     var params = {
         TableName: "recipeDiary",
-        KeyConditionExpression: "recipeID = :bookID", // the query expression
+        // KeyConditionExpression: "recipeID = :bookID", // the query expression
+        KeyConditionExpression: "recipeID = :bookID and #dt between :minDate and :maxDate", // the query expression
+        ExpressionAttributeNames: { // name substitution, used for reserved words in DynamoDB
+            "#dt": "datetime"
+        },
         ExpressionAttributeValues: { // the query values
-            ":bookID": { N: '10001' }
+            ":bookID": { N: "10001" },
+            ":minDate": { N: month },
+            ":maxDate": { N: new Date("October 30, 2020").valueOf().toString() }
         }
     };
 

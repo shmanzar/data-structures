@@ -1,130 +1,153 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<!-- Adapted from: http://bl.ocks.org/Caged/6476579 -->
-
-<style>
-
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
 body {
-  font: 10px sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5em 2em;
+  letter-spacing: -0.011em;
+  font-family: "Inter var", sans-serif;
+  font-size: 16px;
+  color: #34495e;
+  background: #f8f9fa;
+}
+	.title {
+		color: #7b2836;
+		font-family: "Fira Sans";
+		font-weight: 700;
+		padding-left: 1%;
+	}
+
+table {
+  border-collapse: collapse;
 }
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+thead {
+  font-size: 0.9em;
+  letter-spacing: 0;
+  font-weight: 900;
+  white-space: nowrap;
+  text-align: left;
 }
 
-.bar {
-  fill: orange;
+thead th {
+  position: sticky;
+  top: 0;
+  color: #f8f9fa;
+  background: #34495e;
+  padding: 1em 0.8rem;
 }
 
-.bar:hover {
-  fill: orangered ;
+tbody tr:nth-child(odd) {
+  background: #f0f0f3;
 }
 
-.x.axis path {
-  display: none;
+tbody tr:hover {
+  background: #d7ecec;
 }
 
-.d3-tip {
-  line-height: 1;
-  font-weight: bold;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 2px;
+td {
+  padding: 0.8em 0.8rem;
 }
 
-/* Creates a small triangle extender for the tooltip */
-.d3-tip:after {
-  box-sizing: border-box;
-  display: inline;
-  font-size: 10px;
-  width: 100%;
-  line-height: 1;
-  color: rgba(0, 0, 0, 0.8);
-  position: absolute;
+.number {
+  text-align: right;
+  font-feature-settings: "tnum" 1;
+}
+.date {
+  text-align: right;
+  font-feature-settings: "tnum" 1;
+}
+
+tbody .marker {
+  font-size: 0.7em;
+}
+
+tbody .symbol {
+  opacity: 0.6;
+}
+
+.centered {
   text-align: center;
 }
 
-/* Style northward tooltips differently */
-.d3-tip.n:after {
-  margin: -1px 0 0 0;
-  top: 100%;
-  left: 0;
+tbody .text {
+  font-size: 0.9em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
-</style>
-<body>
-<script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="https://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-<script>
+        </style>
 
-var data = {{{sensordata}}} ; 
+        <title>My sensor for the month</title>
+    </head>
+    <body>
+    <h1 class='title'>Apartment's sensor readings</h1>
+        <table id="table"></table>
 
-var margin = {top: 40, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <script>async function drawTable() {
+  // load data
+  //const dateParser = d3.timeParse("%Y-%m-%d")
+  //const dateAccessor = d => dateParser(d.sensorday) 
+  const dateAccessor = d => d.sensorday
+  let dataset =  {{{sensordata}}}
+  dataset = dataset.sort((a,b) => dateAccessor(a) - dateAccessor(b))
 
-var formatPercent = d3.format(".0%");
+  const table = d3.select("#table")
 
-var x = d3.scale.ordinal()
-    .rangeRoundBands([0, width], .1);
+  //const dateFormat = d => d3.timeFormat("%-m/%d")(dateParser(d))
+  //const hourFormat = d => d3.timeFormat("%-I %p")(new Date(d * 1000))
+  //const format24HourTime = d => +d3.timeFormat("%H")(new Date(d * 1000))
 
-var y = d3.scale.linear()
-    .range([height, 0]);
+  const numberOfRows= 60
+  const colorScale = d3.interpolateHcl("#a5c3e8", "#efa8a1")
+  const grayColorScale = d3.interpolateHcl("#fff", "#bdc4ca")
+  const tempScale = d3.scaleLinear()
+    .domain(d3.extent(dataset.slice(0, numberOfRows), d => d.tempvalue))
+    .range([0, 1])
+  const timeScale = d3.scaleLinear()
+    .domain([0, 30])
+    .range([0, 80])
+  const humidityScale = d3.scaleLinear()
+    .domain(d3.extent(dataset.slice(0, numberOfRows), d => d.humvalue))
+    .range([0, 1])
 
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
+  const columns = [
+    {label: "Day", type: "date", format: d => d.sensorday},
+    // {label: "Summary", type: "text", format: d => d.summary},
+    {label: "Average Temp", type: "number", format: d => d3.format(".1f")(d.tempvalue), background: d => colorScale(tempScale(d.tempvalue))},
+    // {label: "Max Temp Time", type: "marker", format: d => "|", transform: d => `translateX(${timeScale(format24HourTime(d.apparentTemperatureMaxTime))}%)`},
+    {label: "Average Humidity", type: "number", format: d => d3.format(".2f")(d.humvalue), background: d => grayColorScale(humidityScale(d.humvalue))},
+    // {label: "Did Snow", type: "centered", format: d => d.precipType == "snow" ? "❄" : ""},
+    // {label: "Heat Index", type: "symbol", format: d => new Array(+d.heatvalue).fill("✸").join("")},
+  ]
 
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .tickFormat(formatPercent);
+  table.append("thead").append("tr")
+    .selectAll("thead")
+    .data(columns)
+    .enter().append("th")
+      .text(d => d.label)
+      .attr("class", d => d.type)
 
-var tip = d3.tip()
-  .attr('class', 'd3-tip')
-  .offset([-10, 0])
-  .html(function(d) {
-    return "<strong>Percentage:</strong> <span style='color:red'>" + formatPercent(d.num_obs) + "</span>";
+  const body = table.append("tbody")
+
+  dataset.slice(0, numberOfRows).forEach(d => {
+    body.append("tr")
+      .selectAll("td")
+      .data(columns)
+      .enter().append("td")
+        .text(column => column.format(d))
+        .attr("class", column => column.type)
+        .style("background", column => column.background && column.background(d))
+        .style("transform", column => column.transform && column.transform(d))
   })
+}
+drawTable()</script>
+    </body>
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-svg.call(tip);
-
-  x.domain(data.map(function(d) { return d.sensorday; }));
-  y.domain([0, d3.max(data, function(d) { return d.num_obs; })]);
-
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Percentage");
-
-  svg.selectAll(".bar")
-      .data(data)
-    .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d.sensorday); })
-      .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.num_obs); })
-      .attr("height", function(d) { return height - y(d.num_obs); })
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide)
-
-</script>
+</html>

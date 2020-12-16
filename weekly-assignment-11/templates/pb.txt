@@ -4,11 +4,37 @@
 <head>
   <meta charset="utf-8">
 
-  <title>Aaron's Process Blog</title>
-  <meta name="description" content="Aaron's Process Blog">
-  <meta name="author" content="Aaron Hill">
+  <title>My recipe diary</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="css/styles.css?v=1.0">
+  <style> 	body {
+		margin: 0;
+		padding: 0;
+		font-family: "Fira Sans";
+	}
+
+	#map {
+		position: relative;
+		top: 0;
+		bottom: 0;
+		width: 100%;
+	}
+
+	.title {
+		color: #7b2836;
+		font-family: "Merriweather";
+		font-weight: 900;
+		padding-left: 1%;
+	}
+
+	.subtitle {
+		color: #7b2836;
+		font-family: "PT Sans";
+		font-weight: normal;
+		padding-left: 2%;
+
+		/*text-align: right;*/
+	}
+	 </style>
 
 </head>
 
@@ -17,13 +43,17 @@
 <script>
 var data = {{{pbdata}}} ; 
 
-var myTable = '<table><thead><tr><th>date</th><th>category</th><th>entry</th></tr></thead><tbody>';
+var myTable = '<table><thead><tr><th>Date</th><th>Book</th><th>Recipe</th><th>Ingredients</th><th>Rating</th></tr></thead><tbody>';
 
 for (var i=0; i < data.length; i++) {
 	myTable += '<tr>';
-	myTable += '<td>' + data[i].dt.N + '</td>';
-	myTable += '<td>' + data[i].topic.S + '</td>';
-	myTable += '<td>' + data[i].entry.S + '</td>';
+	//myTable += '<td>' + new Date(parseInt(data[i].datetime.N)).toLocaleDateString('en')+ '</td>';
+	myTable += '<td>' + data[i].month.N + '</td>';
+	myTable += '<td>' + data[i].book.S + '</td>';
+	myTable += '<td>' + data[i].recipeTitle.S + '</td>';
+	myTable += '<td>' + data[i].ingredientList.SS + '</td>';
+	myTable += '<td>' + data[i].rating.N + '</td>';
+
 	myTable += '</tr>';
 
 }
@@ -36,11 +66,10 @@ $(window).on('load', function() {
 
 </script>
 
-<h3>Aaron's process blog</h3>
+<h3>Recipes I've been trying out from three different books:</h3>
 
 <div id='myEntries'></div>
 
-<p><span class="blinking">My life is so interesting!</span></p>
 
 </body>
 </html>
